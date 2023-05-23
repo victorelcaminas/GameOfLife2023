@@ -12,12 +12,17 @@ import java.awt.Graphics;
  * @author victor
  */
 public class Board extends javax.swing.JPanel {
+    
+    private ViewModelMatrix viewModelMatrix;
 
     /**
      * Creates new form Board
      */
     public Board() {
         initComponents();
+        int numRows = ConfigData.getInstance().getNumRows();
+        int numCols = ConfigData.getInstance().getNumCols();
+        viewModelMatrix = new ViewModelMatrix(numRows, numCols);
     }
     
 
@@ -39,6 +44,19 @@ public class Board extends javax.swing.JPanel {
         int upperMargin = (height - realHeight) / 2;
         g.setColor(Color.WHITE);
         g.fillRect(leftMargin, upperMargin, realWidth, realHeight);
+        
+        // Paint grid
+        g.setColor(Color.LIGHT_GRAY);
+        for (int row = 0; row < numRows; row ++) {
+            g.drawLine(leftMargin, upperMargin + row * squareHeight ,
+                    realWidth + leftMargin,  upperMargin + row * squareHeight );
+        }
+        for (int col = 0; col < numCols; col ++) {
+            g.drawLine(leftMargin + col * squareWidth, upperMargin, 
+                    leftMargin + col * squareWidth, upperMargin + realHeight);
+        }
+        
+        // Paint frame
         g.setColor(Color.BLACK);
         g.drawRect(leftMargin, upperMargin, realWidth, realHeight);
         
