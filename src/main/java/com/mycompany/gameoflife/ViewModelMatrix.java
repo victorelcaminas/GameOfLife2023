@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.gameoflife;
 
 /**
@@ -17,7 +13,6 @@ public class ViewModelMatrix {
     }
     
     public void fillRandom(float ratioAlive) {
-        System.out.println("fillRandom");
         int numRows = dataMatrix.getNumRows();
         int numCols = dataMatrix.getNumCols();
         int numCells = numRows * numCols;
@@ -31,9 +26,7 @@ public class ViewModelMatrix {
                 dataMatrix.born(randRow, randCol);
                 counter ++;
             }
-        }
-        System.out.println("exitFillRandom");
-                
+        }    
     }
     
     public void calculateNextGen() {
