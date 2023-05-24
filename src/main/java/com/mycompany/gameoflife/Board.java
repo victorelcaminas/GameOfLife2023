@@ -13,25 +13,7 @@ import java.awt.Graphics;
  */
 public class Board extends javax.swing.JPanel {
     
-    private ViewModelMatrix viewModelMatrix;
-
-    /**
-     * Creates new form Board
-     */
-    public Board() {
-        initComponents();
-        int numRows = ConfigData.getInstance().getNumRows();
-        int numCols = ConfigData.getInstance().getNumCols();
-        viewModelMatrix = new ViewModelMatrix(numRows, numCols);
-    }
-    
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        paintBackground(g);
-    }
-    
-    private void paintBackground(Graphics g) {
+    class Dimensions {
         int width = getWidth();
         int height = getHeight();
         int numRows = ConfigData.getInstance().getNumRows();
@@ -42,26 +24,63 @@ public class Board extends javax.swing.JPanel {
         int realHeight = squareHeight * numRows;
         int leftMargin = (width - realWidth) / 2;
         int upperMargin = (height - realHeight) / 2;
+    }
+    
+    private ViewModelMatrix viewModelMatrix;
+
+    /**
+     * Creates new form Board
+     */
+    public Board() {
+        initComponents();
+        int numRows = ConfigData.getInstance().getNumRows();
+        int numCols = ConfigData.getInstance().getNumCols();
+        viewModelMatrix = new ViewModelMatrix(numRows, numCols);
+        viewModelMatrix.fillRandom(0.25f);
+    }
+    
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        Dimensions dimensions = new Dimensions();
+        paintBackground(g, dimensions);
+        paintCells(g, dimensions);
+    }
+    
+    private void paintCells(Graphics g, Dimensions d) {
+        g.setColor(Color.BLACK);
+        for (int row = 0; row < d.numRows; row++) {
+            for (int col = 0; col < d.numCols; col++) {
+                if (viewModelMatrix.isAlive(row, col)) {
+                    g.fillRect(d.leftMargin + col * d.squareWidth, 
+                            d.upperMargin + row * d.squareHeight,
+                            d.squareWidth, d.squareHeight);
+                }
+            }
+        }
+    }
+    
+    private void paintBackground(Graphics g, Dimensions d) {
+        
         g.setColor(Color.WHITE);
-        g.fillRect(leftMargin, upperMargin, realWidth, realHeight);
+        g.fillRect(d.leftMargin, d.upperMargin, d.realWidth, d.realHeight);
         
         // Paint grid
         g.setColor(Color.LIGHT_GRAY);
-        for (int row = 0; row < numRows; row ++) {
-            g.drawLine(leftMargin, upperMargin + row * squareHeight ,
-                    realWidth + leftMargin,  upperMargin + row * squareHeight );
+        for (int row = 0; row < d.numRows; row ++) {
+            g.drawLine(d.leftMargin, d.upperMargin + row * d.squareHeight ,
+                    d.realWidth + d.leftMargin,  d.upperMargin + row * d.squareHeight );
         }
-        for (int col = 0; col < numCols; col ++) {
-            g.drawLine(leftMargin + col * squareWidth, upperMargin, 
-                    leftMargin + col * squareWidth, upperMargin + realHeight);
+        for (int col = 0; col < d.numCols; col ++) {
+            g.drawLine(d.leftMargin + col * d.squareWidth, d.upperMargin, 
+                    d.leftMargin + col * d.squareWidth, d.upperMargin + d.realHeight);
         }
         
         // Paint frame
         g.setColor(Color.BLACK);
-        g.drawRect(leftMargin, upperMargin, realWidth, realHeight);
+        g.drawRect(d.leftMargin, d.upperMargin, d.realWidth, d.realHeight);
         
-        System.out.println("width: " + width);
-        System.out.println("Real width: " + realWidth);
+ 
     }
 
     /**
