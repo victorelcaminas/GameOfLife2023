@@ -2,12 +2,35 @@ package com.mycompany.gameoflife;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.Timer;
 
 /**
  *
  * @author victor
  */
 public class Board extends javax.swing.JPanel {
+    
+    class MyMouseAdapter extends MouseAdapter {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int x = e.getX();
+            int y = e.getY();
+            RowCol rc = getRowCol(x, y);
+            if (viewModelMatrix.isAlive(rc.row, rc.col)) {
+                viewModelMatrix.kill(rc.row, rc.col);
+            } else {
+                viewModelMatrix.born(rc.row, rc.col);
+            }
+            repaint();
+        }
+    }
     
     class Dimensions {
         int width = getWidth();
@@ -23,16 +46,44 @@ public class Board extends javax.swing.JPanel {
     }
     
     private ViewModelMatrix viewModelMatrix;
+    private Timer timer;
 
     /**
      * Creates new form Board
      */
     public Board() {
         initComponents();
+        enableMouseListener();
+        timer = new Timer(200, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                tick();
+            }
+        });
         int numRows = ConfigData.getInstance().getNumRows();
         int numCols = ConfigData.getInstance().getNumCols();
         viewModelMatrix = new ViewModelMatrix(numRows, numCols);
         viewModelMatrix.fillRandom(0.25f);
+    }
+    
+    private void enableMouseListener() {
+        addMouseListener(new MyMouseAdapter());
+    }
+    
+    public void initGame() {
+        if (!timer.isRunning()) {
+            timer.start();
+        }
+    }
+    
+    public void stopGame() {
+        timer.stop();
+    }
+    
+    private void tick() {
+        viewModelMatrix.calculateNextGen();
+        repaint();
+        Toolkit.getDefaultToolkit().sync();
     }
     
 
@@ -77,6 +128,13 @@ public class Board extends javax.swing.JPanel {
         g.drawRect(d.leftMargin, d.upperMargin, d.realWidth, d.realHeight);
         
  
+    }
+    
+    public RowCol getRowCol(int x, int y) {
+        Dimensions d = new Dimensions();
+        int row = (y - d.upperMargin) / d.squareHeight;
+        int col = (x - d.leftMargin) / d.squareWidth;
+        return new RowCol(row, col);
     }
 
     /**

@@ -78,4 +78,12 @@ public class ViewModelMatrix {
         return dataMatrix.isAlive(row, col);
     }
     
+    public void kill(int row, int col) {
+        dataMatrix.kill(row, col);
+    }
+    
+    public void born(int row, int col) {
+        dataMatrix.born(row, col);
+    }
+    
 }
