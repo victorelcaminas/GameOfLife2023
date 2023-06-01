@@ -47,6 +47,7 @@ public class Board extends javax.swing.JPanel {
     
     private ViewModelMatrix viewModelMatrix;
     private Timer timer;
+    public static final int DELTA_TIME_TO_STOP = 1000;
 
     /**
      * Creates new form Board
@@ -54,7 +55,7 @@ public class Board extends javax.swing.JPanel {
     public Board() {
         initComponents();
         enableMouseListener();
-        timer = new Timer(200, new ActionListener() {
+        timer = new Timer(calculateDeltaTime(50), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 tick();
@@ -66,12 +67,32 @@ public class Board extends javax.swing.JPanel {
         viewModelMatrix.fillRandom(0.25f);
     }
     
+    public int calculateDeltaTime(int value) {
+        int max_slider_value = 100;
+        int epsilon = 5;
+        int multiplier = 5;
+        return (max_slider_value + epsilon - value) * multiplier; 
+    }
+    
+    public void setDeltaTime(int value) {
+        if (value == 0) {            
+            timer.stop();
+            timer.setDelay(DELTA_TIME_TO_STOP);
+        } else {
+            int delta = calculateDeltaTime(value);
+            timer.setDelay(delta);
+            if (!timer.isRunning()) {
+                timer.start();
+            }
+        }
+    }
+    
     private void enableMouseListener() {
         addMouseListener(new MyMouseAdapter());
     }
     
     public void initGame() {
-        if (!timer.isRunning()) {
+        if (!timer.isRunning() && timer.getDelay() != DELTA_TIME_TO_STOP) {
             timer.start();
         }
     }
@@ -126,7 +147,6 @@ public class Board extends javax.swing.JPanel {
         // Paint frame
         g.setColor(Color.BLACK);
         g.drawRect(d.leftMargin, d.upperMargin, d.realWidth, d.realHeight);
-        
  
     }
     
