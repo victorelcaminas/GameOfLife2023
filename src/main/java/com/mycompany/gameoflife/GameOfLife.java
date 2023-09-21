@@ -12,6 +12,8 @@ public class GameOfLife extends javax.swing.JFrame {
     /**
      * Creates new form GameOfLife
      */
+
+    // Added a comment
     public GameOfLife() {
         ConfigData.getInstance().setNumRows(100);
         ConfigData.getInstance().setNumCols(100);
